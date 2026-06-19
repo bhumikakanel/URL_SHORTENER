@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import {createClient} from "redis";
+import { createClient } from "redis";
 import { encodeBase62 } from "./services/base62_encoding_service.js";
 import { error } from "console";
 
@@ -14,11 +14,11 @@ const redisClient = createClient({
     url: "redis://localhost:6379"
 });
 
-redisClient.on('connect',()=>{
+redisClient.on('connect', () => {
     console.log("Redis is connected")
 });
 
-redisClient.on('error',(err)=>{
+redisClient.on('error', (err) => {
     console.log("Redis connection failed", err)
 });
 
@@ -26,11 +26,11 @@ redisClient.on('error',(err)=>{
 
 
 //shorten a url
-app.post('/shorten', async (req,res) => {
-    const {originalUrl} = req.body;
+app.post("/shorten", async (req, res) => {
+    const { originalUrl } = req.body;
 
-    if(!originalUrl){
-       return res.json({
+    if (!originalUrl) {
+        return res.json({
             status: false,
             error: "Please pass the Long URL"
         });
@@ -40,11 +40,11 @@ app.post('/shorten', async (req,res) => {
         const id = await redisClient.incr('global_counter'); //redis key which stores a number
         const shortUrlId = encodeBase62(id);
 
-        await redisClient.hSet('urls', shortUrlId,originalUrl);
+        await redisClient.hSet('urls', shortUrlId, originalUrl);
 
         res.json({
             status: 'true',
-            data:shortUrlId,
+            data: shortUrlId,
         });
 
     } catch (error) {
@@ -54,10 +54,23 @@ app.post('/shorten', async (req,res) => {
             error: error
         });
     }
-    
+
 });
 
-app.listen((3001),async()=>{
+//get long url from short url
+app.get("/:shortUrlId", async (req,res) => {
+    const shortUrlId = req.params.shortUrlId;
+    const originalUrl = await redisClient.hGet("urls", shortUrlId);
+
+    return res.json({
+        "status": true,
+        "data": originalUrl
+    })
+
+
+})
+
+app.listen((3001), async () => {
     try {
         await redisClient.connect();
         console.log("Backend is running");
