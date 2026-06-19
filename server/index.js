@@ -62,10 +62,14 @@ app.get("/:shortUrlId", async (req,res) => {
     const shortUrlId = req.params.shortUrlId;
     const originalUrl = await redisClient.hGet("urls", shortUrlId);
 
-    return res.json({
-        "status": true,
-        "data": originalUrl
-    })
+    if (!originalUrl) {
+        return res.status(404).json({
+            status: false,
+            error: "Short URL not found"
+        });
+    }
+
+    return res.redirect(originalUrl);
 
 
 })
@@ -73,7 +77,7 @@ app.get("/:shortUrlId", async (req,res) => {
 app.listen((3001), async () => {
     try {
         await redisClient.connect();
-        console.log("Backend is running");
+        console.log("Backend is running...");
     } catch (error) {
         console.log(error);
     }
