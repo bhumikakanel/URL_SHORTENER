@@ -7,6 +7,7 @@ export default function Home() {
   const [generatedShortUrl, setGeneratedShortUrl] = useState("");
   const [retreivedLongUrl, setRetreivedLongUrl] = useState("");
   const [error, setError] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   const handleGenerateShortUrl = async () => {
     try {
@@ -22,6 +23,7 @@ export default function Home() {
       console.log(data);
       if (response.ok) {
         setError("");
+        setRetreivedLongUrl("");
         setGeneratedShortUrl(data.shortUrl);
       } else {
         setError(data.error || "Failed to generate URL");
@@ -29,6 +31,7 @@ export default function Home() {
     }
     catch (error) {
       console.log(error);
+      setGeneratedShortUrl("");
       setError("Failed to generate short URL");
     }
   };
@@ -58,6 +61,20 @@ export default function Home() {
     }
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedShortUrl);
+
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+      setError("Failed to copy URL");
+    }
+  };
 
 
 
@@ -91,11 +108,31 @@ export default function Home() {
         </button>
 
         {generatedShortUrl && (
-          <p className="mt-4 text-green-500">
-            Short URL: <a href={generatedShortUrl} target="_blank" rel="noopener noreferrer">
-              {generatedShortUrl}
-            </a>
-          </p>
+          <div className="mt-4">
+            <p className="text-green-500 break-all">
+              Short URL:
+              <a
+                href={generatedShortUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-2 underline"
+              >
+                {generatedShortUrl}
+              </a>
+            </p>
+
+            <button
+              onClick={handleCopy}
+              className="mt-2 px-3 py-1 bg-green-600 rounded hover:bg-green-700"
+            >
+              Copy URL
+            </button>
+            {copied && (
+              <p className="text-green-400 mt-2">
+                Copied successfully!
+              </p>
+            )}
+          </div>
         )}
       </div>
 
@@ -105,7 +142,7 @@ export default function Home() {
           Get your Long URL
         </h2>
         <input type="text"
-          placeholder="Enter short URL ID"
+          placeholder="Enter short URL or ID"
           value={shortURL}
           onChange={(e) => setShortUrl(e.target.value)}
           className="w-full p-3 rounded-lg bg-gray-700 text-gray-200" />
