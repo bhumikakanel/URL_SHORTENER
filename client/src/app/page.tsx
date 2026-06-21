@@ -34,8 +34,10 @@ export default function Home() {
   };
 
   const handleRetreiveLongUrl = async () => {
+
     try {
-      const response = await fetch(`http://localhost:3001/lookup/${shortURL}`, {
+      const shortId = shortURL.split("/").pop();
+      const response = await fetch(`http://localhost:3001/lookup/${shortId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
