@@ -30,11 +30,12 @@ app.post("/shorten", async (req, res) => {
     const { originalUrl } = req.body;
 
     if (!originalUrl) {
-        return res.json({
+        return res.status(400).json({
             status: false,
             error: "Please pass the Long URL"
         });
     }
+
 
     try {
         const id = await redisClient.incr('global_counter'); //redis key which stores a number
@@ -42,11 +43,10 @@ app.post("/shorten", async (req, res) => {
 
         await redisClient.hSet('urls', shortUrlId, originalUrl);
 
-        res.json({
-            status: 'true',
-            data: shortUrlId,
+        res.status(201).json({
+            status: true,
+            shortUrl: `http://localhost:3001/${shortUrlId}`
         });
-
     } catch (error) {
         console.log(error);
         res.json({
@@ -55,25 +55,117 @@ app.post("/shorten", async (req, res) => {
         });
     }
 
+
 });
 
-//get long url from short url
-app.get("/:shortUrlId", async (req,res) => {
-    const shortUrlId = req.params.shortUrlId;
-    const originalUrl = await redisClient.hGet("urls", shortUrlId);
+// get long url from short url
+app.get("/lookup/:shortUrlId", async (req, res) => {
+    try {
+        const { shortUrlId } = req.params;
 
-    if (!originalUrl) {
-        return res.status(404).json({
+        const originalUrl = await redisClient.hGet(
+            "urls",
+            shortUrlId
+        );
+
+        if (!originalUrl) {
+            return res.status(404).json({
+                status: false,
+                error: "Short URL not found"
+            });
+        }
+
+        return res.json({
+            status: true,
+            data: originalUrl
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
             status: false,
-            error: "Short URL not found"
+            error: "Internal Server Error"
         });
     }
-    console.log("Redirecting to:", originalUrl);
+});
 
-    return res.redirect(originalUrl);
+app.get("/analytics/:shortUrlId", async (req, res) => {
+  
+
+    try {
+        const { shortUrlId } = req.params;
+
+        
+
+        const clicks = await redisClient.hGet(
+            "clicks",
+            shortUrlId
+        );
+
+       
+
+        return res.json({
+            status: true,
+            shortUrlId,
+            clicks: Number(clicks || 0)
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            status: false,
+            error: "Internal Server Error"
+        });
+    }
+});
+// redirect endpoint
+app.get("/:shortUrlId", async (req, res) => {
+    
+    try {
+        const { shortUrlId } = req.params;
+
+        const originalUrl = await redisClient.hGet(
+            "urls",
+            shortUrlId
+        );
+
+        if (!originalUrl) {
+            return res.status(404).json({
+                status: false,
+                error: "Short URL not found"
+            });
+        }
+
+        
+
+        // analytics
+        await redisClient.hIncrBy(
+            "clicks",
+            shortUrlId,
+            1
+        );
+        
+
+        console.log(
+            "Redirecting to:",
+            originalUrl
+        );
+
+        return res.redirect(originalUrl);
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            status: false,
+            error: "Internal Server Error"
+        });
+    }
+});
 
 
-})
 
 app.listen((3001), async () => {
     try {

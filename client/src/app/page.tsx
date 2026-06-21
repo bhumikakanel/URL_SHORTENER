@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
@@ -7,11 +6,55 @@ export default function Home() {
   const [shortURL, setShortUrl] = useState("");
   const [generatedShortUrl, setGeneratedShortUrl] = useState("");
   const [retreivedLongUrl, setRetreivedLongUrl] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
-  const handleGenerateShortUrl = async () => { };
+  const handleGenerateShortUrl = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/shorten", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ originalUrl: longURL })
+      });
 
-  const handleRetreiveLongUrl = async () => { };
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setError("");
+        setGeneratedShortUrl(data.shortUrl);
+      } else {
+        setError(data.error || "Failed to generate URL");
+      }
+    }
+    catch (error) {
+      console.log(error);
+      setError("Failed to generate short URL");
+    }
+  };
+
+  const handleRetreiveLongUrl = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/lookup/${shortURL}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setError("");
+        setRetreivedLongUrl(data.data);
+      } else {
+        setError(data.error || "URL not found");
+      }
+    }
+    catch (error) {
+      console.log(error);
+      setError("Failed to retrieve long URL");
+    }
+  };
 
 
 
@@ -21,6 +64,12 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-8 font-serif">
         Welcome to microURL SaaS
       </h1>
+
+      {error && (
+        <div className="mb-4 px-4 py-2 bg-red-900 text-red-300 rounded-lg">
+          {error}
+        </div>
+      )}
 
       {/* generate a new short url*/}
       <div className="w-full max-w-md bg-gray-800 rounded-lg p-6 mb-6">
@@ -41,7 +90,9 @@ export default function Home() {
 
         {generatedShortUrl && (
           <p className="mt-4 text-green-500">
-            Short URL: <a href={`/${generatedShortUrl}`} target="_blank"></a>
+            Short URL: <a href={generatedShortUrl} target="_blank" rel="noopener noreferrer">
+              {generatedShortUrl}
+            </a>
           </p>
         )}
       </div>
@@ -63,7 +114,7 @@ export default function Home() {
 
         {retreivedLongUrl && (
           <p className="mt-4 text-green-500">
-            Long URL: <a href={retreivedLongUrl} target="_blank">{retreivedLongUrl}</a>
+            Long URL: <a href={retreivedLongUrl} target="_blank" rel="noopener noreferrer">{retreivedLongUrl}</a>
           </p>
         )}
       </div>
