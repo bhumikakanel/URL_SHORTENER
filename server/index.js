@@ -3,6 +3,9 @@ import cors from "cors";
 import { createClient } from "redis";
 import { encodeBase62 } from "./services/base62_encoding_service.js";
 import { error } from "console";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
@@ -11,7 +14,7 @@ app.use(express.json());
 
 //initialise redis
 const redisClient = createClient({
-    url: "redis://localhost:6379"
+    url: process.env.REDIS_URL
 });
 
 redisClient.on('connect', () => {
@@ -70,7 +73,7 @@ app.post("/shorten", async (req, res) => {
 
         return res.status(201).json({
             status: true,
-            shortUrl: `http://localhost:3001/${shortUrlId}`
+            shortUrl: `${process.env.BACKEND_URL}/${shortUrlId}`
         });
 
     } catch (error) {
@@ -191,7 +194,7 @@ app.get("/:shortUrlId", async (req, res) => {
 
 
 
-app.listen((3001), async () => {
+app.listen(process.env.PORT || 3001, async () => {
     try {
         await redisClient.connect();
         console.log("Backend is running...");

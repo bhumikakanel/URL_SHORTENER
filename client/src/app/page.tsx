@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+
 export default function Home() {
   const [longURL, setLongUrl] = useState("");
   const [shortURL, setShortUrl] = useState("");
@@ -11,7 +12,7 @@ export default function Home() {
 
   const handleGenerateShortUrl = async () => {
     try {
-      const response = await fetch("http://localhost:3001/shorten", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/shorten`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -40,7 +41,7 @@ export default function Home() {
 
     try {
       const shortId = shortURL.split("/").pop();
-      const response = await fetch(`http://localhost:3001/lookup/${shortId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lookup/${shortId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
