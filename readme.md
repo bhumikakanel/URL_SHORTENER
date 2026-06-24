@@ -41,5 +41,5 @@ Databse : Redis (Upstash)
 ##Snapshots 
 
 <img src = "./images/Homepage.png" alt = "Not found" />
-<img src = "./shorturl.png" alt = "Not found" />
-<img src = "./retrievelongurl.png" alt = "Not found" />
+<img src = "./images/shorturl.png" alt = "Not found" />
+<img src = "./images/retrievelongurl.png" alt = "Not found" />
