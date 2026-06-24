@@ -1,4 +1,4 @@
-#URL SHORTENER SAAS
+# URL SHORTENER SAAS
 
 A production-ready URL shortening service built with Next.js, Express.js, Redis (Upstash), Vercel, and Render.
 
@@ -12,7 +12,7 @@ A production-ready URL shortening service built with Next.js, Express.js, Redis 
 7. Cloud deployment with Vercel and Render
 8. Redis-powered storage using Upstash
 
-##Tech Stack
+## Tech Stack
 
 Frontend :
 1. Next.js
@@ -27,7 +27,7 @@ Backend :
 Databse : Redis (Upstash)
 
 
-##Steps to run locally
+## Steps to run locally
 1. Clone repository
 2. Frontend :
    cd client
@@ -38,8 +38,8 @@ Databse : Redis (Upstash)
    npm install
    npm run dev
 
-##Snapshots 
+## Snapshots 
 
-<img src = "./images/Homepage.png" alt = "Not found" />
-<img src = "./images/shorturl.png" alt = "Not found" />
-<img src = "./images/retrievelongurl.png" alt = "Not found" />
+<img src = "images/Homepage.png" alt = "Not found" />
+<img src = "images/shorturl.png" alt = "Not found" />
+<img src = "images/retrievelongurl.png" alt = "Not found" />
