@@ -36,8 +36,9 @@ cd client
 npm install
 npm run dev
 ```
-```bash
+
 3. Backend :
+```bash
 cd server
 npm install
 npm run dev
