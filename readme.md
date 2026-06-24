@@ -2,7 +2,7 @@
 
 A production-ready URL shortening service built with Next.js, Express.js, Redis (Upstash), Vercel, and Render.
 
-##Features
+## Features
 1. Generate short URLs from long URLs
 2. Redirect users to the original URL
 3. Retrieve original URL using short URL ID
@@ -30,16 +30,23 @@ Databse : Redis (Upstash)
 ## Steps to run locally
 1. Clone repository
 2. Frontend :
-   cd client
-   npm install
-   npm run dev
+
+``` bash
+cd client
+npm install
+npm run dev
+```
+```bash
 3. Backend :
-   cd server
-   npm install
-   npm run dev
+cd server
+npm install
+npm run dev
+```
 
 ## Snapshots 
 
-<img src = "images/Homepage.png" alt = "Not found" />
-<img src = "images/shorturl.png" alt = "Not found" />
-<img src = "images/retrievelongurl.png" alt = "Not found" />
+![Homepage](./Images/Homepage.png)
+
+![Short URL](./Images/shorturl.png)
+
+![Retrieve Long URL](./Images/retrievelongurl.png)
